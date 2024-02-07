@@ -18,11 +18,14 @@ import requests
 import sys
 import re
 import lib.common as common
+import pandas as pd
+import streamlit as st
+from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, ColumnsAutoSizeMode
 
 try:
-	st.set_page_config(page_title="Mercitalia - Automazione LDV / RDS", page_icon=os.path.join('images','favicon.ico'), layout="wide", menu_items=None)
+	st.set_page_config(page_title="Regione Campania - Ricerca Traiettorie", page_icon=os.path.join('images','favicon.ico'), layout="wide", menu_items=None)
 	st.title("Scelta Range Date")
-	st.sidebar.image(os.path.join('images','mercitalia.png'), use_column_width=True)
+	st.sidebar.image(os.path.join('images','logo.png'), use_column_width=True)
 	import streamlit_authenticator as stauth
 
 	import yaml
@@ -41,33 +44,8 @@ try:
 
 	if st.session_state["authentication_status"]:		
 		load_dotenv()
-		ldv_folders = []
-		for root, dirs, files in os.walk(os.path.join('ldv')):
-			for name in dirs:
-				ldv_folders.append(os.path.join(name))
 		st.image(os.path.join('images','Slide1.JPG'), use_column_width=True)
-		st.write("""
-### Descrizione
-In questa fase **il sistema recupera da una serie di e-mail i contenuti più importanti** sulla base del range di date scelto dall’operatore, per restringere il campo di ricerca. 
-Le e-mail sono provenienti dall’estero e sono rese disponibili tramite una mailbox Mercitalia.
-Contengono gli allegati Lettera di Vettura e Distinta Carri, sotto forma di PDF o Excel.
-**Tutti gli allegati sono convertiti in immagini**. L'utente selezionerà la mail con cui viene inizializzato il processo di estrazione cognitiva dei dati.
 
-### Componenti utilizzati
-- **Azure App Service**: Web Container che ospita una applicazione Python che organizza tutta la logica applicativa
-- **Azure Blob Storage**: Servizio di storage per file/blob ad alta scalabilità 
-""")	
-		col_1, col_2 = st.columns([1,1])
-		with col_1:
-			data_inizio = st.date_input('Seleziona la data di inizio del range', datetime.date(2023, 11, 1))
-		with col_2:
-			data_fine = st.date_input('Seleziona la data di fine del range', datetime.date(2023, 11, 30))
-
-		import pandas as pd
-		import streamlit as st
-		from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, ColumnsAutoSizeMode
-		
-		ldv_folders = []
 		colonne = ['Data email', 'Oggetto', 'Da']
 		df = pd.DataFrame(columns=colonne)
 		i = 0
@@ -101,20 +79,8 @@ Contengono gli allegati Lettera di Vettura e Distinta Carri, sotto forma di PDF 
 					update_mode=GridUpdateMode.SELECTION_CHANGED,
 					columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 
-		selected_rows = data["selected_rows"]
-
-		# if len(selected_rows) != 0:
-		# 	st.session_state["selected_email"] = selected_rows[0]['Data email']
-		# 	st.write('Email selezionata: '.format(st.session_state["selected_email"]))
-		# 	st.write('**Data**: {}'.format(selected_rows[0]['Data email']))
-		# 	st.write('**Soggetto**: {}'.format(selected_rows[0]['Oggetto']))
-		# 	st.write('**Da**: {}'.format(selected_rows[0]['Da']))
-
-		if st.button("Conferma i valori"):
-			common.clean_session()
-			st.session_state["ldv"] = selected_rows[0]['Data email']
-			print('mail selected ' + st.session_state["ldv"])
-			st.toast("Valori confermati. E' possibile procedere con la fase successiva")
+		if st.button("Ricerca Traiettorie"):
+			st.toast("TODO")
 
 	elif st.session_state["authentication_status"] is False:
 		st.error('Username/password is incorrect')
